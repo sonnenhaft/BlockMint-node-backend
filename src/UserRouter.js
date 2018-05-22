@@ -1,15 +1,13 @@
 const redis = require('./redis');
 const express = require('express');
 
-const toArray = map => {
-    return Object.keys(map).map(key => {
-        try {
-            return JSON.parse(map[key])
-        } catch (e) {
-            return null
-        }
-    }).filter(val => !!val)
-};
+const toArray = map => Object.keys(map).map(key => {
+    try {
+        return JSON.parse(map[key])
+    } catch (e) {
+        return null
+    }
+}).filter(val => !!val);
 
 const router = express.Router();
 
@@ -21,17 +19,19 @@ router.get('/', (req, res) => {
 
 router.get('/:id', (req, res) => {
     redis.hget('UserTable', req.params.id, (error, value) => {
-        if (!value) {
-            res.send(404)
+        if (error) {
+            res.status(500).send(error)
+        } else if (!value) {
+            res.status(404).send()
         } else {
-            res.send((!error && value) ? JSON.stringify(value) : error)
+            res.send(value)
         }
     })
 });
 
-router.put('/:id', (req, res) => {
+router.post('/', (req, res) => {
     let newId = req.body.id;
-    redis.hset('UserTable', newId, req.body, (error) => {
+    redis.hset('UserTable', newId, JSON.stringify(req.body), (error) => {
         if (error) {
             res.send({error})
         } else {
@@ -41,18 +41,25 @@ router.put('/:id', (req, res) => {
 });
 
 router.put('/:id', (req, res) => {
-    redis.hset('UserTable', req.params.id, req.body, (error) => {
+    redis.hset('UserTable', req.params.id, JSON.stringify(req.body), (error) => {
         if (error) {
-            res.send({error})
+            res.status(500).send({error})
         } else {
             res.send(req.body)
         }
     });
 });
 
-router.delete((req, res) => {
-    redis.del('UserTable', req.id);
-    res.send(200);
+router.delete('/:id', (req, res) => {
+    redis.hget('UserTable', req.params.id, (error, user) => {
+        if (!user) {
+            res.status(404).send()
+        } else {
+            redis.del('UserTable', req.params.id, () => {
+                res.send('ok');
+            });
+        }
+    })
 });
 
 module.exports = router;

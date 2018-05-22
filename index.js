@@ -1,11 +1,15 @@
+const express = require('express');
+const swaggerUi = require('swagger-ui-express');
 const redis = require('./src/redis');
 const REDIS_URL = redis.REDIS_URL;
-
-const express = require('express');
-
 const app = express();
+
+// app.use(require('cors')());
 app.use(require('body-parser').json());
-app.use('/user', require('./src/UserRouter'));
+app.use(require('body-parser').urlencoded());
+
+app.use('/api/v1/user', require('./src/UserRouter'));
+app.use('/', swaggerUi.serve, swaggerUi.setup(require('yamljs').load('./api-docs.swagger.v1.yaml')));
 
 const SERVER_PORT = 3002;
 
@@ -16,4 +20,3 @@ redis.on('connect', () => {
         console.info('App is listening port:', SERVER_PORT);
     });
 });
-
