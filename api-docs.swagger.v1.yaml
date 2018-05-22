@@ -10,9 +10,10 @@ info:
 basePath: "/api/v1"
 tags:
 - name: Users
-  description: API for users in the system
-schemes:
-- http
+  description: CRUD for users
+- name: Vpn
+  description: CRUD for vpn list
+   
 consumes:
 - application/json
 produces:
@@ -20,14 +21,14 @@ produces:
 paths:
   "/user":
     get:
-          tags:
-          - Users
-          summary: Get all users in system
-          responses:
-            '200':
-              description: OK
-              schema:
-                "$ref": "#/definitions/Users"
+      tags:
+      - Users
+      summary: Get all users in system
+      responses:
+        '200':
+          description: OK
+          schema:
+            "$ref": "#/definitions/Users"
     post:
       tags:
       - Users
@@ -45,9 +46,9 @@ paths:
           description: New user is created
           schema:
             "$ref": "#/definitions/User"
-  "/user/{id}":
+  "/user/{username}":
     parameters:
-    - name: id
+    - name: username
       in: path
       required: true
       description: ID of user that we want to find
@@ -55,14 +56,14 @@ paths:
     get:
       tags:
       - Users
-      summary: Get user with given ID
+      summary: Get user with given username
       responses:
         '200':
           description: User is found
           schema:
             "$ref": "#/definitions/User"
     put:
-      summary: Update user with given ID
+      summary: Update user with given username
       tags:
       - Users
       parameters:
@@ -77,7 +78,7 @@ paths:
           schema:
             "$ref": "#/definitions/User"
     delete:
-          summary: Delete user with given ID
+          summary: Delete user with given username
           tags:
           - Users
           responses:
@@ -85,21 +86,102 @@ paths:
               description: User is deleted
               schema:
                 "$ref": "#/definitions/User"
+
+  "/vpn":
+    get:
+      tags:
+      - Vpns
+      summary: Get vpn list in system
+      responses:
+        '200':
+          description: OK
+          schema:
+            "$ref": "#/definitions/Vpns"
+    post:
+      tags:
+      - Vpns
+      description: Create new VPN in system
+      parameters:
+      - name: vpn
+        in: body
+        description: VPN that we want to add
+        schema:
+          "$ref": "#/definitions/Vpn"
+      produces:
+      - application/json
+      responses:
+        '200':
+          description: VPN added
+          schema:
+            "$ref": "#/definitions/Vpn"
+  "/vpn/{vpnname}":
+    parameters:
+    - name: vpnname
+      in: path
+      required: true
+      description: ID of VPN that we want to find
+      type: string
+    get:
+      tags:
+      - Vpns
+      summary: Get VPN object with given url
+      responses:
+        '200':
+          description: VPN is found
+          schema:
+            "$ref": "#/definitions/Vpn"
+    put:
+      summary: Update VPN with given url
+      tags:
+      - Vpns
+      parameters:
+      - name: vpn
+        in: body
+        description: VPN with new values of properties
+        schema:
+          "$ref": "#/definitions/Vpn"
+      responses:
+        '200':
+          description: VPN is updated
+          schema:
+            "$ref": "#/definitions/Vpn"
+    delete:
+      summary: Delete VPN with given url
+      tags:
+      - Vpns
+      responses:
+        '200':
+          description: VPN is deleted
+          schema:
+            "$ref": "#/definitions/Vpn"
+                
 definitions:
   User:
     required:
-    - id
     - username
     - password
     properties:
-      id:
-        type: string
-        uniqueItems: true
       username:
         type: string
+        uniqueItems: true
       password:
         type: string
   Users:
     type: array
     items:
       "$ref": "#/definitions/User"
+
+  Vpn:
+    required:
+    - url
+    - name
+    properties:
+      url:
+        type: string
+        uniqueItems: true
+      name:
+        type: string
+  Vpns:
+    type: array
+    items:
+      "$ref": "#/definitions/Vpn"

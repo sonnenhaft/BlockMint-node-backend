@@ -1,3 +1,3 @@
 const RedisRouterFactory = require('./RedisRouterFactory');
 
-module.exports = RedisRouterFactory('UserTable');
+module.exports = RedisRouterFactory('VpnTable');
