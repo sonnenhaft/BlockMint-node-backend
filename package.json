@@ -1,0 +1,25 @@
+{
+  "name": "BlockMint-node",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Backend for BlockMint project, for reddis part",
+  "keywords": [
+    "Redis",
+    "express"
+  ],
+  "author": "Vladimir Shein <vladimir.sonnenhaft@gmail.com>",
+  "license": "MIT",
+  "main": "index.js",
+  "dependencies": {
+    "body-parser": "1.18.3",
+    "express": "4.12.3",
+    "redis": "2.8.0"
+  },
+  "devDependencies": {
+    "nodemon": "1.17.4"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  }
+}

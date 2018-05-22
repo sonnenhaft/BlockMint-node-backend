@@ -1,0 +1,12 @@
+### dependencies ###
+node_modules
+
+### production/build ###
+build
+
+### IDE ###
+.DS_Store
+.idea
+
+### logs ###
+npm-debug.log*
