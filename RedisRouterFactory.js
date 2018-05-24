@@ -39,11 +39,14 @@ module.exports = (tableName, key = 'id') => {
         });
     });
 
+
     router.post('/', (req, res) => {
-        getItem(tableName, req.body[key]).catch((error) => {
-            return error
-        }).then(()=>{
-            return Promise.reject('already exist')
+        console.log(tableName, key, req.body[key])
+        getItem(tableName, req.body[key]).catch(e => e).then((result) => {
+            console.log(result)
+            if (result !== 'not found') {
+                return Promise.reject('already exist')
+            }
         }).then(() => {
             return setItem(tableName, req.body[key], JSON.stringify(req.body))
         }).catch(error => {

@@ -10,15 +10,15 @@ client.on('error', err => console.log(`Error ${err}`));
     {username: 'User 2', password: '123456'},
     {username: 'User 3', password: '123456'},
     {username: 'User 4', password: '123456'},
-].forEach((user) => {
-    client.hset('UserTable', user.id, JSON.stringify(user));
+].forEach((item) => {
+    client.hset('UserTable', item.username, JSON.stringify(item));
 });
 
 [
-    {username: 'http://ya.ru', name: 'hello'},
-    {username: 'http://google.ru', name: 'hello'}
-].forEach((user) => {
-    client.hset('VpnTable', user.id, JSON.stringify(user));
+    {url: 'http://ya.ru', name: 'hello'},
+    {url: 'http://google.ru', name: 'hello'}
+].forEach((item) => {
+    client.hset('VpnTable', item.name, JSON.stringify(item));
 });
 
 module.exports = client;
