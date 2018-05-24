@@ -1,5 +1,6 @@
-const redis = require('./redis');
 const express = require('express');
+const {promisify} = require('util');
+const redis = require('./redis');
 
 const toArray = map => Object.keys(map).map(key => {
     try {
@@ -8,6 +9,16 @@ const toArray = map => Object.keys(map).map(key => {
         return null
     }
 }).filter(val => !!val);
+
+const getItem = promisify(redis.hget);
+const removeItem = promisify(redis.del);
+const setItem = promisify(redis.hset);
+
+const checkExist = (tableName, id) => getItem(tableName, id).then(item => {
+    return item || Promise.reject('not found')
+});
+
+const getErrStatus = error => error === 'not found' ? 404 : 500;
 
 module.exports = (tableName, key = 'id') => {
     const router = express.Router();
@@ -19,48 +30,52 @@ module.exports = (tableName, key = 'id') => {
     });
 
     router.get(`/:${key}`, (req, res) => {
-        redis.hget(tableName, req.params[key], (error, value) => {
-            if (error) {
-                res.status(500).send(error)
-            } else if (!value) {
-                res.status(404).send()
-            } else {
-                res.send(value)
-            }
-        })
+        let status = 200;
+        checkExist(tableName, req.params[key]).catch(error => {
+            status = getErrStatus(error);
+            return error
+        }).then((value) => {
+            res.status(status).send(value)
+        });
     });
 
     router.post('/', (req, res) => {
-        const newId = req.body[key];
-        redis.hset(tableName, newId, JSON.stringify(req.body), (error) => {
-            if (error) {
-                res.send({error})
-            } else {
-                res.send(req.body)
-            }
+        getItem(tableName, req.body[key]).catch((error) => {
+            return error
+        }).then(()=>{
+            return Promise.reject('already exist')
+        }).then(() => {
+            return setItem(tableName, req.body[key], JSON.stringify(req.body))
+        }).catch(error => {
+            res.send(500, error);
+            return Promise.reject(error)
+        }).then(() => {
+            res.send(req.body)
         });
     });
 
     router.put(`/:${key}`, (req, res) => {
-        redis.hset(tableName, req.params[key], JSON.stringify(req.body), (error) => {
-            if (error) {
-                res.status(500).send({error})
-            } else {
-                res.send(req.body)
-            }
+        let status = 200;
+        checkExist(tableName, req.params[key]).then(ignoredItem => {
+            return setItem(tableName, req.params[key], JSON.stringify(req.body));
+        }).catch(error => {
+            status = getErrStatus(error);
+            return error
+        }).then((message) => {
+            res.status(status || 200).send(message || req.body)
         });
     });
 
     router.delete(`/:${key}`, (req, res) => {
-        redis.hget(tableName, req.params[key], (error, user) => {
-            if (!user) {
-                res.status(404).send()
-            } else {
-                redis.del(tableName, req.params[key], () => {
-                    res.send('ok');
-                });
-            }
-        })
+        let status = 200;
+        checkExist(tableName, req.params[key]).then(ignoredItem => {
+            return removeItem(tableName, req.params[key]);
+        }).catch(error => {
+            status = getErrStatus(error);
+            return error
+        }).then((message) => {
+            res.status(status).send(message || 'ok')
+        });
     });
 
     return router;
