@@ -10,9 +10,10 @@ const toArray = map => Object.keys(map).map(key => {
     }
 }).filter(val => !!val);
 
-const getItem = promisify(redis.hget);
-const removeItem = promisify(redis.del);
-const setItem = promisify(redis.hset);
+const removeItem = promisify(redis.del).bind(redis);
+const getItem = promisify(redis.hget).bind(redis);
+const setItem = promisify(redis.hset).bind(redis);
+
 
 const checkExist = (tableName, id) => getItem(tableName, id).then(item => {
     return item || Promise.reject('not found')
@@ -41,10 +42,8 @@ module.exports = (tableName, key = 'id') => {
 
 
     router.post('/', (req, res) => {
-        console.log(tableName, key, req.body[key])
         getItem(tableName, req.body[key]).catch(e => e).then((result) => {
-            console.log(result)
-            if (result !== 'not found') {
+            if (result !== 'not found' && result) {
                 return Promise.reject('already exist')
             }
         }).then(() => {
