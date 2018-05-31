@@ -1,182 +1,65 @@
 ---
-swagger: '3.0'
+swagger: '2.0'
 info:
-  version: 0.0.1
+  version: 0.0.2
   title: BlockMint-node
   description: Backend for BlockMint project, for reddis part
-  license:
-    name: MIT
-    url: https://opensource.org/licenses/MIT
-basePath: "/api/v1"
+  license: { name: MIT,  url: https://opensource.org/licenses/MIT }
+basePath: /
 tags:
-- name: Users
-  description: CRUD for users
-- name: Vpn
-  description: CRUD for vpn list
-   
-consumes:
-- application/json
-produces:
-- application/json
-paths:
-  "/user":
-    get:
-      tags:
-      - Users
-      summary: Get all users in system
-      responses:
-        '200':
-          description: OK
-          schema:
-            type: array
-            items:
-              "$ref": "#/definitions/User"
-    post:
-      tags:
-      - Users
-      description: Create new user in system
-      parameters:
-      - name: user
-        in: body
-        description: User that we want to create
-        schema:
-          "$ref": "#/definitions/User"
-      produces:
-      - application/json
-      responses:
-        '200':
-          description: New user is created
-          schema:
-            "$ref": "#/definitions/User"
-  "/user/{username}":
-    parameters:
-    - name: username
-      in: path
-      required: true
-      description: ID of user that we want to find
-      type: string
-    get:
-      tags:
-      - Users
-      summary: Get user with given username
-      responses:
-        '200':
-          description: User is found
-          schema:
-            "$ref": "#/definitions/User"
-    put:
-      summary: Update user with given username
-      tags:
-      - Users
-      parameters:
-      - name: user
-        in: body
-        description: User with new values of properties
-        schema:
-          "$ref": "#/definitions/User"
-      responses:
-        '200':
-          description: User is updated
-          schema:
-            "$ref": "#/definitions/User"
-    delete:
-          summary: Delete user with given username
-          tags:
-          - Users
-          responses:
-            '200':
-              description: User is deleted
-              schema:
-                "$ref": "#/definitions/User"
+- { name: user, description: User related actions }
+- { name: vpn list, description: VPN list operations }
 
-  "/vpn":
+paths:
+  /user/{wallet}/info:
     get:
-      tags:
-      - Vpns
-      summary: Get vpn list in system
+      tags: [ user ]
+      parameters:
+      - name: wallet
+        in: path
+        required: true
+        type: string
+      summary: Get user info with given wallet
       responses:
-        '200':
-          description: OK
+        200:
+          description: Info about user
           schema:
-            type: array
-            items:
-              "$ref": "#/definitions/Vpn"
+            type: object
+            properties:
+              wallet: { type: string }
+              password: { type: string }
+        400: { description: Wallet not registered }
+  /user/{password}:
     post:
-      tags:
-      - Vpns
-      description: Create new VPN in system
+      tags: [ user ]
       parameters:
-      - name: vpn
-        in: body
-        description: VPN that we want to add
-        schema:
-          "$ref": "#/definitions/Vpn"
-      produces:
-      - application/json
+      - name: password
+        in: path
+        required: true
+        type: string
+      summary: Create new wallet with password
       responses:
-        '200':
-          description: VPN added
+        200:
+          description: Returns valid wallet
           schema:
-            "$ref": "#/definitions/Vpn"
-  "/vpn/{name}":
-    parameters:
-    - name: name
-      in: path
-      required: true
-      description: ID of VPN that we want to find
-      type: string
+            type: string
+            properties:  { wallet: { type: string } }
+  /vpn:
     get:
-      tags:
-      - Vpns
-      summary: Get VPN object with given url
+      tags: [ vpn list ]
+      summary: Get list of vpn severs (urls)
       responses:
-        '200':
-          description: VPN is found
-          schema:
-            "$ref": "#/definitions/Vpn"
-    put:
-      summary: Update VPN with given url
-      tags:
-      - Vpns
+        200:
+          description: Returns list of urls
+          schema: { type: array,  items: { type: string } }
+    post:
       parameters:
-      - name: vpn
-        in: body
-        description: VPN with new values of properties
-        schema:
-          "$ref": "#/definitions/Vpn"
+      - in: body
+        name: body
+        description: String list of urls
+        schema: { type: array,  items: { type: string } }
+      tags: [ vpn list ]
+      summary: Update list of vpn severs
       responses:
-        '200':
-          description: VPN is updated
-          schema:
-            "$ref": "#/definitions/Vpn"
-    delete:
-      summary: Delete VPN with given url
-      tags:
-      - Vpns
-      responses:
-        '200':
-          description: VPN is deleted
-          schema:
-            "$ref": "#/definitions/Vpn"
-                
-definitions:
-  User:
-    required:
-    - username
-    - password
-    properties:
-      username:
-        type: string
-        uniqueItems: true
-      password:
-        type: string
-  Vpn:
-    required:
-    - url
-    - name
-    properties:
-      url:
-        type: string
-        uniqueItems: true
-      name:
-        type: string
+        200:
+          description: Sever was updated successfully

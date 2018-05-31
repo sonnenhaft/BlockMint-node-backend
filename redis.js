@@ -1,26 +1,35 @@
-const redis = require('redis');
+const REDIS_URL = 'redis://localhost:6379'; // it is default url
 
-const REDIS_URL = `redis://localhost:6379`; // it is default url
-const client = redis.createClient(REDIS_URL);
+const asyncRedis = require('async-redis');
+const client = asyncRedis.createClient(REDIS_URL);
 
 client.on('error', err => console.log(`Error ${err}`));
 
-[
-    {username: 'User 1', password: '123456'},
-    {username: 'User 2', password: '123456'},
-    {username: 'User 3', password: '123456'},
-    {username: 'User 4', password: '123456'},
-].forEach((item) => {
-    client.hset('UserTable', item.username, JSON.stringify(item));
-});
+const getWalletAddress = async () => {
+    return await Promise.resolve(`${Date.now()}`)
+};
 
-[
-    {url: 'http://ya.ru', name: 'hello'},
-    {url: 'http://google.ru', name: 'hello'}
-].forEach((item) => {
-    client.hset('VpnTable', item.name, JSON.stringify(item));
-});
+const USER_MAP_WALLET_PASSWORD = 'user:map:wallet-password';
+
+const createWalletFromPassword = async (password) => {
+    const wallet = await getWalletAddress();
+
+    await client.hset(USER_MAP_WALLET_PASSWORD, wallet, password);
+    return wallet
+};
+
+const VPN_LIST = 'vpn:list';
+
+const setVpnUrls = async (urlsList) => {
+    await client.del(VPN_LIST);
+    await Promise.all(urlsList.map(url => {
+        return client.lpush(VPN_LIST, url);
+    }));
+};
 
 module.exports = client;
-
+module.exports.createWalletFromPassword = createWalletFromPassword;
 module.exports.REDIS_URL = REDIS_URL;
+module.exports.setVpnUrls = setVpnUrls;
+module.exports.VPN_LIST = VPN_LIST;
+module.exports.USER_MAP_WALLET_PASSWORD = USER_MAP_WALLET_PASSWORD;
