@@ -11,12 +11,15 @@
   "license": "MIT",
   "main": "index.js",
   "dependencies": {
+    "async-redis": "^1.1.4",
     "body-parser": "1.18.3",
+    "connect-multiparty": "^2.1.0",
     "cors": "^2.8.4",
     "express": "4.12.3",
+    "express-fileupload": "^0.4.0",
+    "formidable": "^1.2.1",
     "swagger-ui-express": "3.0.9",
-    "yamljs": "^0.3.0",
-    "async-redis": "^1.1.4"
+    "yamljs": "^0.3.0"
   },
   "devDependencies": {
     "nodemon": "1.17.4"

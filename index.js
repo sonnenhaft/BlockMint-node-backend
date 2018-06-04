@@ -6,10 +6,14 @@ const app = express();
 
 // app.use(require('cors')());
 app.use(require('body-parser').json());
-app.use(require('body-parser').urlencoded());
+app.use(require('body-parser').urlencoded({extended:false}));
+// app.use(require('express-fileupload')());
+// app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({extended:false}));
 
 app.use('/user', require('./user.router'));
 app.use('/vpn', require('./vpn.router'));
+
 
 
 app.use('/', swaggerUi.serve, swaggerUi.setup(require('yamljs').load('./api-docs.swagger.v1.yaml')));

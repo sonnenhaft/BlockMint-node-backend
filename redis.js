@@ -5,19 +5,7 @@ const client = asyncRedis.createClient(REDIS_URL);
 
 client.on('error', err => console.log(`Error ${err}`));
 
-const getWalletAddress = async () => {
-    return await Promise.resolve(`${Date.now()}`)
-};
-
 const USER_MAP_WALLET_PASSWORD = 'user:map:wallet-password';
-
-const createWalletFromPassword = async (password) => {
-    const wallet = await getWalletAddress();
-
-    await client.hset(USER_MAP_WALLET_PASSWORD, wallet, password);
-    return wallet
-};
-
 const VPN_LIST = 'vpn:list';
 
 const setVpnUrls = async (urlsList) => {
@@ -28,7 +16,6 @@ const setVpnUrls = async (urlsList) => {
 };
 
 module.exports = client;
-module.exports.createWalletFromPassword = createWalletFromPassword;
 module.exports.REDIS_URL = REDIS_URL;
 module.exports.setVpnUrls = setVpnUrls;
 module.exports.VPN_LIST = VPN_LIST;

@@ -11,15 +11,35 @@ tags:
 - { name: vpn list, description: VPN list operations }
 
 paths:
+  /user:
+    post:
+      summary: Save user key with given password and address. This api does not validate key
+      tags: [ user ]
+      consumes:
+      - multipart/form-data
+      parameters:
+      - name: address
+        in: formData
+        required: true
+        type: string
+      - name: password
+        in: formData
+        required: true
+        type: string
+      - in: formData
+        name: file
+        type: file
+      responses:
+        200: { description: File uploaded, user and password stored in db }
   /user/{wallet}/info:
     get:
+      summary: Get user info with given wallet
       tags: [ user ]
       parameters:
       - name: wallet
         in: path
         required: true
         type: string
-      summary: Get user info with given wallet
       responses:
         200:
           description: Info about user
@@ -29,37 +49,22 @@ paths:
               wallet: { type: string }
               password: { type: string }
         400: { description: Wallet not registered }
-  /user/{password}:
-    post:
-      tags: [ user ]
-      parameters:
-      - name: password
-        in: path
-        required: true
-        type: string
-      summary: Create new wallet with password
-      responses:
-        200:
-          description: Returns valid wallet
-          schema:
-            type: string
-            properties:  { wallet: { type: string } }
   /vpn:
     get:
-      tags: [ vpn list ]
       summary: Get list of vpn severs (urls)
+      tags: [ vpn list ]
       responses:
         200:
           description: Returns list of urls
           schema: { type: array,  items: { type: string } }
     post:
+      summary: Update list of vpn severs
+      tags: [ vpn list ]
       parameters:
       - in: body
         name: body
         description: String list of urls
         schema: { type: array,  items: { type: string } }
-      tags: [ vpn list ]
-      summary: Update list of vpn severs
       responses:
         200:
           description: Sever was updated successfully

@@ -17,9 +17,11 @@ When you extend app, on every change app will reload itself.
 
 ## Run prod
 
-```npm run start```
+```/root/wallet-server-node/nvm exec 8.9.2 npm run start```
 
 ## Server port and redis url
 
 Right now app will be launched on port 3002, and will look for local redis on port 6379.
 Later it will be configurable via environment variables.
+
+
