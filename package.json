@@ -1,6 +1,6 @@
 {
   "name": "BlockMint-node",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "private": true,
   "description": "Backend for BlockMint project, for reddis part",
   "keywords": [
@@ -13,9 +13,7 @@
   "dependencies": {
     "async-redis": "^1.1.4",
     "body-parser": "1.18.3",
-    "connect-multiparty": "^2.1.0",
     "cors": "^2.8.4",
-    "express": "4.12.3",
     "express-fileupload": "^0.4.0",
     "formidable": "^1.2.1",
     "swagger-ui-express": "3.0.9",
