@@ -13,6 +13,7 @@ app.use(require('body-parser').urlencoded({extended:false}));
 
 app.use('/user', require('./user.router'));
 app.use('/vpn', require('./vpn.router'));
+app.use('/xmr', require('./xmr.router'));
 
 
 

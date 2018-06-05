@@ -5,19 +5,19 @@ const {USER_MAP_WALLET_PASSWORD} = require('./redis');
 
 const router = express.Router();
 
-router.get('/:wallet/info', rejectHandler(async (req, res) => {
-    const wallet = req.params.wallet;
-    if (!wallet) {
-        req.status(404).send('please send valid wallet');
+router.get('/:address', rejectHandler(async (req, res) => {
+    const address = req.params.address;
+    if (!address) {
+        res.status(404).send('please send valid wallet');
     } else {
-        const password = await redis.hget(USER_MAP_WALLET_PASSWORD, wallet);
+        const password = await redis.hget(USER_MAP_WALLET_PASSWORD, address);
         if (!password) {
-            req.status(404).send('such wallet is not registered');
+            res.status(404).send('such wallet address is not registered');
         } else {
-            res.send({password, wallet});
+            res.send({password, address});
         }
     }
-}));
+}, 'address'));
 
 const formidable = require('formidable');
 
@@ -31,13 +31,14 @@ if (!fs.existsSync(UPLOAD_DIR)) {
 router.post('/', (req, res) => {
     const form = new formidable.IncomingForm();
     form.uploadDir = UPLOAD_DIR;
+
     form.on('fileBegin', (name, file) => {
         file.path = `${UPLOAD_DIR}/${file.name}`;
     });
-    form.parse(req, async (fileParseError, fields, files) => {
-        const address = fields.address;
-        await rename(`${UPLOAD_DIR}/${files.file.name}`, `${UPLOAD_DIR}/${address}`);
-        await redis.hset(USER_MAP_WALLET_PASSWORD, address, fields.password);
+
+    form.parse(req, async (fileParseError, {address, password}, {file}) => {
+        await rename(`${UPLOAD_DIR}/${file.name}`, `${UPLOAD_DIR}/${address}`);
+        await redis.hset(USER_MAP_WALLET_PASSWORD, address, password);
         res.status(200).send('File uploaded, user and password stored in db');
     });
 });

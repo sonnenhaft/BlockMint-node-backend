@@ -10,9 +10,8 @@ router.get('/', rejectHandler(async (req, res) => {
 }));
 
 router.post('/', rejectHandler(async (req, res) => {
-    const urls = req.body;
-    await setVpnUrls(urls);
-    res.status(200).send('Urls updated')
+    await setVpnUrls(req.body);
+    res.status(200).send('URLs updated')
 }));
 
 module.exports = router;
