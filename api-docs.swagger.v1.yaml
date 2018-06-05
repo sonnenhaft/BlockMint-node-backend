@@ -77,6 +77,11 @@ paths:
     get:
       summary: Get list of xmrs, registered via this server related to this address
       tags: [ xmr ]
+      parameters:
+      - in: path
+        name: address
+        description: address of wallet owner
+        schema: { type: object }
       responses:
         200:
           description: Returns list of XMR
@@ -85,6 +90,10 @@ paths:
       summary: Add XMR to particular address (wallet) and send it to pool
       tags: [ xmr ]
       parameters:
+      - in: path
+        name: address
+        description: address of wallet owner
+        schema: { type: object }
       - in: body
         name: body
         description: XMR object to be sent to pool
