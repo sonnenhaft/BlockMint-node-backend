@@ -12,4 +12,5 @@ COPY . .
 
 EXPOSE 3002
 
+CMD [ "redis-server", "--daemonize", "yes" ]
 CMD [ "npm", "start" ]
