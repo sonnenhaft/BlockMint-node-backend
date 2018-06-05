@@ -25,3 +25,8 @@ Right now app will be launched on port 3002, and will look for local redis on po
 Later it will be configurable via environment variables.
 
 
+## Build docker image
+
+This repo contains Dockerfile, so after you install docker - run
+```docker build .```
+This will create docker image.

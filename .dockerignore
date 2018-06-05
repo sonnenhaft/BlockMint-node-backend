@@ -1,0 +1,7 @@
+node_modules/
+uploaded-keys/
+*.log
+nodemon.json
+README.md
+.gitignore
+Dockerfile
