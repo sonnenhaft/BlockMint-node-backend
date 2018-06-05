@@ -18,8 +18,8 @@ router.post('/:address', rejectHandler(async (req, res) => {
 }, 'address'));
 
 router.get('/:address', rejectHandler(async (req, res) => {
-    let xmrs = await redis.lrange(`${USER_LIST_WALLET_XMR}:${address}`, 0, -1);
-    xmrs = xmrs.map(xmr => JSON.parse(xmr))
+    let xmrs = await redis.lrange(`${USER_LIST_WALLET_XMR}:${req.params.address}`, 0, -1);
+    xmrs = xmrs.map(xmr => JSON.parse(xmr));
     res.send(xmrs);
 }, 'address'));
 
