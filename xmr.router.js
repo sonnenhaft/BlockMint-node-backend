@@ -13,12 +13,14 @@ const sendXmrToPool = () => {
 router.post('/:address', rejectHandler(async (req, res) => {
     const address = req.params.address;
     await sendXmrToPool(address);
-    await redis.lpush(`${USER_LIST_WALLET_XMR}:${address}`, req.body);
+    await redis.lpush(`${USER_LIST_WALLET_XMR}:${address}`, JSON.stringify(req.body));
     res.send('XMR was sent to pool and stored in the system');
 }, 'address'));
 
 router.get('/:address', rejectHandler(async (req, res) => {
-    res.send(await redis.lrange(`${USER_LIST_WALLET_XMR}:${address}`, 0, -1));
+    let xmrs = await redis.lrange(`${USER_LIST_WALLET_XMR}:${address}`, 0, -1);
+    xmrs = xmrs.map(xmr => JSON.parse(xmr))
+    res.send(xmrs);
 }, 'address'));
 
 module.exports = router;
