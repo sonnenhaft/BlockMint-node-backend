@@ -34,9 +34,12 @@ paths:
         description: Address key that you have generated using monero while creating a wallet.
         name: file
         type: file
+        required: true
       responses:
         200: { description: File uploaded, user and password stored in db }
-  /user/:address:
+        400: { description: Required field was not sent to server }
+        409: { description: User with such address already exists }
+  /user/{address}:
     get:
       summary: Get user info with given wallet
       tags: [ user ]
@@ -53,7 +56,8 @@ paths:
             properties:
               wallet: { type: string }
               password: { type: string }
-        400: { description: Wallet address not registered }
+        404: { description: Wallet address not registered }
+        400: { description: This request require waller address in url. }
   /vpn:
     get:
       summary: Get list of vpn severs (urls)
@@ -71,9 +75,8 @@ paths:
         description: String list of urls
         schema: { type: array,  items: { type: string } }
       responses:
-        200:
-          description: Sever was updated successfully
-  /xmr/:address:
+        200: { description: Sever was updated successfully }
+  /xmr/{address}:
     get:
       summary: Get list of xmrs, registered via this server related to this address
       tags: [ xmr ]
@@ -82,10 +85,12 @@ paths:
         name: address
         description: address of wallet owner
         schema: { type: object }
+        required: true
       responses:
         200:
           description: Returns list of XMR
           schema: { type: array,  items: { type: object } }
+        404: { description: User with such address does not exist. You can not add xmr to user which does not exist. }
     post:
       summary: Add XMR to particular address (wallet) and send it to pool
       tags: [ xmr ]
@@ -94,10 +99,11 @@ paths:
         name: address
         description: address of wallet owner
         schema: { type: object }
+        required: true
       - in: body
         name: body
         description: XMR object to be sent to pool
         schema: { type: object }
+        required: true
       responses:
-        200:
-          description: XMR was sent to pool and stored in the system
+        200: { description: XMR was sent to pool and stored in the system }
