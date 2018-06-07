@@ -22,7 +22,7 @@ const getBalance = async (address) => {
 router.get('/:address', checkIfUserExists, rejectHandler(async (req, res) => {
     const address = req.params.address
     const password = await redis.hget(USER_MAP_ADDRESS_PASSWORD, address)
-    res.send({password, address, balance: getBalance(address)})
+    res.send({password, address, balance: await getBalance(address)})
 }))
 
 
