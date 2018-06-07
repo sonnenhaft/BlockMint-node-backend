@@ -79,7 +79,13 @@ paths:
       responses:
         200:
           description: Returns list of urls
-          schema: { type: array,  items: { type: string } }
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                url: { type: string }
+                country: { type: string }
     post:
       summary: Update list of vpn severs
       tags: [ vpn list ]
@@ -87,7 +93,13 @@ paths:
       - in: body
         name: body
         description: String list of urls
-        schema: { type: array,  items: { type: string } }
+        schema:
+          type: array
+          items:
+            type: object
+            properties:
+              url: { type: string }
+              country: { type: string }
       responses:
         200: { description: Sever was updated successfully }
 

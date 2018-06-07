@@ -12,8 +12,8 @@ const VPN_LIST = 'vpn:list';
 
 const setVpnUrls = async (urlsList) => {
     await client.del(VPN_LIST);
-    await Promise.all(urlsList.map(url => {
-        return client.lpush(VPN_LIST, url);
+    await Promise.all(urlsList.map(data => {
+        return client.lpush(VPN_LIST, JSON.stringify(data));
     }));
 };
 

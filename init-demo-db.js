@@ -19,7 +19,10 @@ const {
                     redis.lpush(USER_LIST_ADDRESS, JSON.stringify({address, password}))
                 ]);
             })),
-            setVpnUrls(['http://ya.ru', 'http://google.ru'])
+            setVpnUrls([
+                {url: 'http://ya.ru', country: 'Ru'},
+                {url: 'http://google.ru', country: 'US'}
+            ])
         ];
         console.log('test users and vpn list created');
     } catch (e) {

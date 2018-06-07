@@ -28,9 +28,9 @@
 </div>
 
 <script>
-    $.get('/user', (data) => createTable('#user', data));
-    $.get('/xmr', (data) => createTable('#xmr', data));
-    $.get('/vpn', (data) => createTable('#vpn', data.map(url => ({'VPN address': url}))));
+    $.get('/user', data => createTable('#user', data));
+    $.get('/xmr', data => createTable('#xmr', data));
+    $.get('/vpn', data => createTable('#vpn', data));
 
     const createTable = (selector, data) => {
         const keys = data.length ? Object.keys(data[0]) : [];

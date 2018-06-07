@@ -5,8 +5,7 @@ const {redis, VPN_LIST, setVpnUrls} = require('./redis');
 const router = express.Router();
 
 router.get('/', rejectHandler(async (req, res) => {
-    console.log('ok here')
-    res.send(await redis.lrange(VPN_LIST, 0, -1));
+    res.send((await redis.lrange(VPN_LIST, 0, -1)).map(data => JSON.parse(data)));
 }));
 
 router.post('/', rejectHandler(async (req, res) => {
