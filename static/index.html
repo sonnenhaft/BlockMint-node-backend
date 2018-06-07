@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>[Admin] BlockMint-node</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+
+</head>
+<body>
+
+
+<div class="container">
+    <br>
+    <a href="/docs">Swagger docs</a>
+    <h2>Users list</h2>
+    <div id="user"></div>
+
+    <h2>XMRs list</h2>
+    <div id="xmr"></div>
+
+    <h2>VPNs list</h2>
+    <div id="vpn"></div>
+</div>
+
+<script>
+    $.get('/user', (data) => createTable('#user', data));
+    $.get('/xmr', (data) => createTable('#xmr', data));
+    $.get('/vpn', (data) => createTable('#vpn', data.map(url => ({'VPN address': url}))));
+
+    const createTable = (selector, data) => {
+        const keys = data.length ? Object.keys(data[0]) : [];
+        $(selector).html(`
+            <table class="table table-striped table-bordered">
+                <thead><tr>${keys.map(key => `<th>${key}</th>`).join('\n')}</tr></thead>
+                <tbody>
+                ${data.map(row => `<tr>${keys.map(key => `<td>${row[key]}</td>`).join('\n')}</tr>`).join('\n')}
+                </tbody>
+            </table>
+        `);
+
+        if (!data.length) {
+            $(selector).text(`no data`);
+        }
+    }
+</script>
+
+</body>
+</html>

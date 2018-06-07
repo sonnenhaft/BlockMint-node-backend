@@ -1,5 +1,5 @@
 module.exports = (fn, param) => async (req, res) => {
-    if (!req.params[param]) {
+    if (param && !req.params[param]) {
         res.send(404)
     } else {
         try {
