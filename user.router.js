@@ -4,8 +4,7 @@ const {redis, USER_MAP_ADDRESS_PASSWORD, USER_LIST_ADDRESS, checkIfUserExists} =
 
 const router = express.Router()
 
-router.get('', rejectHandler(async (req, res) => {
-    console.log('here')
+router.get('/', rejectHandler(async (req, res) => {
     const list = await redis.lrange(USER_LIST_ADDRESS, 0, -1);
 
     res.send((list || []).map(stringUser => ({...JSON.parse(stringUser), balance: 'N/A'})));
