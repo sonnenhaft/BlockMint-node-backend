@@ -1,20 +1,36 @@
 const express = require('express')
 const rejectHandler = require('./rejectHandler')
-const {redis, USER_MAP_ADDRESS_PASSWORD, USER_LIST_ADDRESS, checkIfUserExists} = require('./redis')
+const {redis, USER_MAP_ADDRESS_PASSWORD, USER_LIST_ADDRESS, checkIfUserExists, getBalanceTable} = require('./redis')
 
 const router = express.Router()
 
 router.get('/', rejectHandler(async (req, res) => {
     const list = await redis.lrange(USER_LIST_ADDRESS, 0, -1);
 
-    res.send((list || []).map(stringUser => ({...JSON.parse(stringUser), balance: 'N/A'})));
+    const users = (list || []).map(stringUser => ({...JSON.parse(stringUser)}));
+    const balances = await Promise.all(users.map(({address}) => getBalance(address)))
+    users.forEach((user, idx) => user.balance = balances[idx])
+
+    res.send(users);
 }))
+
+const getBalance = async (address) => {
+    const balanceArray = (await redis.lrange(getBalanceTable(address), 0, -1)) || []
+    return balanceArray.reduce(((val, item) => val + (item - 0)), 0);
+}
 
 router.get('/:address', checkIfUserExists, rejectHandler(async (req, res) => {
     const address = req.params.address
     const password = await redis.hget(USER_MAP_ADDRESS_PASSWORD, address)
-    res.send({password, address, balance: 'N/A'})
-}, 'address'))
+    res.send({password, address, balance: getBalance(address)})
+}))
+
+
+router.post('/:address/balance', checkIfUserExists, rejectHandler(async (req, res) => {
+    const address = req.params.address;
+    await redis.lpush(getBalanceTable(address), req.body.amount)
+    res.send({balance: await getBalance(address)})
+}))
 
 const formidable = require('formidable')
 

@@ -29,22 +29,47 @@ paths:
             properties:
               address: { type: string }
               password: { type: string }
+              balance: { type: number }
         404: { description: Wallet address not registered }
-        400: { description: This request require waller address in url. }
+  /user/{address}/balance:
+    post:
+      summary: Change balance of current address
+      tags: [ user ]
+      parameters:
+      - name: address
+        in: path
+        required: true
+        type: string
+      - name: amount
+        in: body
+        required: true
+        schema:
+          type: object
+          properties:
+            amount: { type: number }
+      responses:
+        200:
+          description: return balance of current address
+          schema:
+            type: object
+            properties:
+              balance: { type: number }
+        404: { description: Wallet address not registered }
   /user:
     get:
-            summary: Get list of existing users (array of objects {address, password})
-            tags: [ user ]
-            responses:
-              200:
-                description: List of users
-                schema:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      address: { type: string }
-                      password: { type: string }
+      summary: Get list of existing users (array of objects {address, password})
+      tags: [ user ]
+      responses:
+        200:
+          description: List of users
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                address: { type: string }
+                password: { type: string }
+                balance: { type: number }
     post:
       summary: Save user key with given password and address. This api does not validate
         key, it is done by C++ server. Input format is html form, in other words body with mime type "multipart/form-data" (simple HTML form)

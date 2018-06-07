@@ -17,9 +17,13 @@ const setVpnUrls = async (urlsList) => {
     }));
 };
 
+const getBalanceTable = (address) =>{
+    return `hincrby:monero:workers:${address}:balance`
+}
+
 const checkIfUserExists = async (req, res, next) => {
     const address = req.params.address;
-    if (!(await redis.hget(USER_MAP_ADDRESS_PASSWORD, address))) {
+    if (!(await client.hget(USER_MAP_ADDRESS_PASSWORD, address))) {
         res.status(404).send('User with such address does not exist.')
     } else {
         next();
@@ -28,6 +32,7 @@ const checkIfUserExists = async (req, res, next) => {
 
 module.exports = client;
 module.exports.redis = client;
+module.exports.getBalanceTable = getBalanceTable;
 module.exports.REDIS_URL = REDIS_URL;
 module.exports.checkIfUserExists = checkIfUserExists;
 module.exports.setVpnUrls = setVpnUrls;
