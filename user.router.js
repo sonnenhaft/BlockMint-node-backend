@@ -8,14 +8,13 @@ router.get('', rejectHandler(async (req, res) => {
     console.log('here')
     const list = await redis.lrange(USER_LIST_ADDRESS, 0, -1);
 
-    res.send((list || []).map(stringUser => JSON.parse(stringUser)));
+    res.send((list || []).map(stringUser => ({...JSON.parse(stringUser), balance: 'N/A'})));
 }))
 
 router.get('/:address', checkIfUserExists, rejectHandler(async (req, res) => {
-    console.log('hereee')
     const address = req.params.address
     const password = await redis.hget(USER_MAP_ADDRESS_PASSWORD, address)
-    res.send({password, address})
+    res.send({password, address, balance: 'N/A'})
 }, 'address'))
 
 const formidable = require('formidable')
