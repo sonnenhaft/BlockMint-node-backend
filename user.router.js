@@ -7,7 +7,7 @@ const router = express.Router()
 router.get('/', rejectHandler(async (req, res) => {
     const list = await redis.lrange(USER_LIST_ADDRESS, 0, -1);
 
-    const users = (list || []).map(stringUser => ({...JSON.parse(stringUser)}));
+    const users = (list || []).reverse().map(stringUser => ({...JSON.parse(stringUser)}));
     const balances = await Promise.all(users.map(({address}) => getBalance(address)))
     users.forEach((user, idx) => user.balance = balances[idx])
 
@@ -16,7 +16,7 @@ router.get('/', rejectHandler(async (req, res) => {
 
 const getBalance = async (address) => {
     const balanceArray = (await redis.lrange(getBalanceTable(address), 0, -1)) || []
-    return balanceArray.reduce(((val, item) => val + (item - 0)), 0);
+    return balanceArray.reverse().reduce(((val, item) => val + (item - 0)), 0);
 }
 
 router.get('/:address', checkIfUserExists, rejectHandler(async (req, res) => {
@@ -59,12 +59,12 @@ router.post('/', (req, res) => {
             res.status(400).send(error)
         } else {
             if (await redis.hget(USER_MAP_ADDRESS_PASSWORD, address)) {
-                res.status(409).send('User with such address already exists.')
+                res.status(409).send({message: 'User with such address already exists.'})
             } else {
                 await rename(`${UPLOAD_DIR}/${file.name}`, `${UPLOAD_DIR}/${address}`)
                 await redis.hset(USER_MAP_ADDRESS_PASSWORD, address, password)
                 redis.lpush(USER_LIST_ADDRESS, JSON.stringify({address, password}))
-                res.status(200).send('File uploaded, user and password stored in db')
+                res.status(200).send({message: 'File uploaded, user and password stored in db'})
             }
         }
     })

@@ -12,9 +12,9 @@ const VPN_LIST = 'vpn:list';
 
 const setVpnUrls = async (urlsList) => {
     await client.del(VPN_LIST);
-    await Promise.all(urlsList.map(data => {
-        return client.lpush(VPN_LIST, JSON.stringify(data));
-    }));
+    urlsList.forEach(async data=>{
+        await client.lpush(VPN_LIST, JSON.stringify(data));
+    })
 };
 
 const getBalanceTable = (address) =>{
@@ -24,7 +24,7 @@ const getBalanceTable = (address) =>{
 const checkIfUserExists = async (req, res, next) => {
     const address = req.params.address;
     if (!(await client.hget(USER_MAP_ADDRESS_PASSWORD, address))) {
-        res.status(404).send('User with such address does not exist.')
+        res.status(404).send({message: 'User with such address does not exist.'})
     } else {
         next();
     }
